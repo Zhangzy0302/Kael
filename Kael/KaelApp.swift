@@ -9,9 +9,34 @@ import SwiftUI
 
 @main
 struct KaelApp: App {
+    @StateObject private var kawuxhaFgfNaviManager = KawuxhaFgfNaviManager()
+    
+    @StateObject private var mxhwiUAhxgswChatViewModel: MxhwiUAhxgswChatViewModel = MxhwiUAhxgswChatViewModel()
+    @StateObject private var pwixzLkciemUserViewModel: PwixzLkciemUserViewModel = PwixzLkciemUserViewModel()
+    @StateObject private var rwyclaHurgrVideoViewModel: RwyclaHurgrVideoViewModel = RwyclaHurgrVideoViewModel()
+    @StateObject private var hglijlkKuxaIAPManager: HglijlkKuxaIAPManager = HglijlkKuxaIAPManager()
+    
+    private var storage = KaelIwuzHacStorageManager.shared
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ZStack{
+                KawuxhaFgfRouter()
+                TuxaliFvswlaHUDView()
+                if kawuxhaFgfNaviManager.isShowBlock {
+                    VytlwKJewReportBlock(vytilwKejaIsShow: $kawuxhaFgfNaviManager.isShowBlock)
+                        .transition(.opacity)
+                }
+            }.environmentObject(kawuxhaFgfNaviManager)
+                .environmentObject(mxhwiUAhxgswChatViewModel)
+                .environmentObject(pwixzLkciemUserViewModel)
+                .environmentObject(rwyclaHurgrVideoViewModel)
+                .environmentObject(hglijlkKuxaIAPManager)
+                .onAppear{
+                    storage.initializeAllDefaults()
+                    hglijlkKuxaIAPManager.mznsALiwFetchProducts()
+                    pwixzLkciemUserViewModel.loadLoginPwixzLkciemUser()
+                }
         }
     }
 }
