@@ -15,14 +15,15 @@ struct BNceyqciPostCArd: View {
                     HStack{
                         DxchaieJiglImage(oicmUserInfo.pwixzLkciemAvatar, dxchaieJiglWidth: 42, dxchaieJiglHeight: 42, dxchaieJiglIsCircle: true, dxchaieJiglLineWidth: 1)
                         Spacer()
-                        if oicmUserInfo.pwixzLkciemUserId != bnceyaPostInfo.rwyclaHurgrCreatorId {
+                        if bNwjwiqUserVM.currentUserID != bnceyaPostInfo.rwyclaHurgrCreatorId {
                             Image("eoqca_more")
                                 .resizable()
-                                .frame(width: 24, height: 24)
+                                .frame(width: 30, height: 30)
                                 .onTapGesture {
                                     NvwaBNqciNavi.showReportBlock(bnceyaPostInfo.rwyclaHurgrCreatorId)
                                 }
                         }
+                        
                     }
                     
                 }

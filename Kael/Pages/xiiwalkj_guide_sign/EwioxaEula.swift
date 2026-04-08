@@ -84,7 +84,7 @@ struct EwioxaEula: View {
                     .padding(.bottom, 44)
             }
         }.navigationBarHidden(true)
-            .background(KWnxioaiVwhSwipeBack())
+            .background(VhuaGehuSwipeBack())
     }
 }
 

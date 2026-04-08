@@ -135,7 +135,7 @@ struct XpavheSignXePage: View {
         }.onAppear{
             xpawvheCurrentStatus = xpveheguideType
         }.navigationBarHidden(true)
-            .background(KWnxioaiVwhSwipeBack())
+            .background(VhuaGehuSwipeBack())
     }
     
     struct XpaveiaAucuInputBox: View {

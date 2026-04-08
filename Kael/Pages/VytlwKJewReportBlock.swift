@@ -41,6 +41,8 @@ struct VytlwKJewReportBlock: View {
                     }.onTapGesture {
                         vytilwiJjUserVM.toggleUserIsBlocked(blockUserId: vytlwKjewNavi.blockUserID!)
                         vytilwKejaIsShow = false
+                        
+                        TuxaliFvswlaHUD.toast(.success("Blocked successfully"))
                     }
                     Text("Cancel")
                         .font(KaelGhueauTheme.KaelFont.jetBrainsMono(20, weight: .extraBold))

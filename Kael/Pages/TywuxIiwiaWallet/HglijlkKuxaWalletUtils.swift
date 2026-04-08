@@ -11,25 +11,25 @@ struct HglijlkKuxaProduct {
 
 let eoquaAfporjxuwProducts: [HglijlkKuxaProduct] = [
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "lvbsvhxcgcrvesor", wisxaHRjeUfrGetDiamond: 400, wisxaHRjeUfrPrice: 0.99),
+    wisxaHRjeUfrKeyId: "saaauiwzanugqkue", wisxaHRjeUfrGetDiamond: 400, wisxaHRjeUfrPrice: 0.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "dxismgcwewhrtezo", wisxaHRjeUfrGetDiamond: 800, wisxaHRjeUfrPrice: 1.99),
+    wisxaHRjeUfrKeyId: "cufqhwwtruywequl", wisxaHRjeUfrGetDiamond: 800, wisxaHRjeUfrPrice: 1.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "khtxlcejaxmqcsra", wisxaHRjeUfrGetDiamond: 2190, wisxaHRjeUfrPrice: 3.99),
+    wisxaHRjeUfrKeyId: "uysqkdztrnphvljc", wisxaHRjeUfrGetDiamond: 2190, wisxaHRjeUfrPrice: 3.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "yadwwvxspgxwlndb", wisxaHRjeUfrGetDiamond: 2450, wisxaHRjeUfrPrice: 4.99),
+    wisxaHRjeUfrKeyId: "qtrvjrldbpuobfhl", wisxaHRjeUfrGetDiamond: 2450, wisxaHRjeUfrPrice: 4.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "qnrcuelbtiuflyky", wisxaHRjeUfrGetDiamond: 3950, wisxaHRjeUfrPrice: 7.99),
+    wisxaHRjeUfrKeyId: "pczvlytnrqkwmbas", wisxaHRjeUfrGetDiamond: 3950, wisxaHRjeUfrPrice: 7.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "ymohxnvpkqxutvab", wisxaHRjeUfrGetDiamond: 5150, wisxaHRjeUfrPrice: 9.99),
+    wisxaHRjeUfrKeyId: "vwxfmzjjgzchmnfr", wisxaHRjeUfrGetDiamond: 5150, wisxaHRjeUfrPrice: 9.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "lkrzqvmpjtnwbxfa", wisxaHRjeUfrGetDiamond: 6700, wisxaHRjeUfrPrice: 13.99),
+    wisxaHRjeUfrKeyId: "mxrjtlqfksahvzne", wisxaHRjeUfrGetDiamond: 7700, wisxaHRjeUfrPrice: 13.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "pkzeekokfzarcvis", wisxaHRjeUfrGetDiamond: 10800, wisxaHRjeUfrPrice: 19.99),
+    wisxaHRjeUfrKeyId: "ipuxukzujkqtvbdi", wisxaHRjeUfrGetDiamond: 10800, wisxaHRjeUfrPrice: 19.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "vpfbfgxamdcvxkcf", wisxaHRjeUfrGetDiamond: 29400, wisxaHRjeUfrPrice: 49.99),
+    wisxaHRjeUfrKeyId: "zgymxegfnfowecuq", wisxaHRjeUfrGetDiamond: 29400, wisxaHRjeUfrPrice: 49.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "cwmnxfbzrdehncqu", wisxaHRjeUfrGetDiamond: 63700, wisxaHRjeUfrPrice: 99.99)
+    wisxaHRjeUfrKeyId: "kcpisczvlozopdfa", wisxaHRjeUfrGetDiamond: 63700, wisxaHRjeUfrPrice: 99.99)
 ]
 
 enum HglijlkKuxaPurchaseResult {

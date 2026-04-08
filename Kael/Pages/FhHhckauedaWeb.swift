@@ -400,6 +400,6 @@ struct FhHhckauedaWeb: View {
                 .ignoresSafeArea()
         }.ignoresSafeArea()
             .navigationBarHidden(true)
-                .background(KWnxioaiVwhSwipeBack())
+                .background(VhuaGehuSwipeBack())
     }
 }

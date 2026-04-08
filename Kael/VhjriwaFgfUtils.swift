@@ -1,15 +1,15 @@
 import SwiftUI
 
 // 桥接 UIKit 恢复手势
-struct KWnxioaiVwhSwipeBack: UIViewControllerRepresentable {
+struct VhuaGehuSwipeBack: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> UIViewController {
         let controller = UIViewController()
         
         DispatchQueue.main.async {
-            if let wpqOAIjckad = controller.navigationController {
-                wpqOAIjckad.interactivePopGestureRecognizer?.isEnabled = true
-                wpqOAIjckad.interactivePopGestureRecognizer?.delegate = nil
+            if let vhuawNgrucw = controller.navigationController {
+                vhuawNgrucw.interactivePopGestureRecognizer?.isEnabled = true
+                vhuawNgrucw.interactivePopGestureRecognizer?.delegate = nil
             }
         }
         
