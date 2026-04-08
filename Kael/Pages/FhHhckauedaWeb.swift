@@ -367,7 +367,7 @@ extension Coordinator {
                 "Malicious insults",
                 "False Information"
             ],
-            "coinsSetting": eoquaAfporjxuwProducts.map {
+            "coinsSetting": hghawiL2189jLkjProducts.map {
                 [
                     "key": $0.wisxaHRjeUfrKeyId,
                     "cions": $0.wisxaHRjeUfrGetDiamond,

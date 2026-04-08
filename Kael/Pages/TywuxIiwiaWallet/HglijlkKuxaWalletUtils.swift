@@ -4,32 +4,32 @@ import SwiftUI
 import Combine
 
 struct HglijlkKuxaProduct {
-  let wisxaHRjeUfrKeyId: String
-  let wisxaHRjeUfrGetDiamond: Int
-  let wisxaHRjeUfrPrice: Double
+  let hglijlkKuxaKeyId: String
+  let hglijlkKuxaGetDiamond: Int
+  let hglijlkKuxaPrice: Double
 }
 
-let eoquaAfporjxuwProducts: [HglijlkKuxaProduct] = [
+let hghawiL2189jLkjProducts: [HglijlkKuxaProduct] = [
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "saaauiwzanugqkue", wisxaHRjeUfrGetDiamond: 400, wisxaHRjeUfrPrice: 0.99),
+    hglijlkKuxaKeyId: "saaauiwzanugqkue", hglijlkKuxaGetDiamond: 400, hglijlkKuxaPrice: 0.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "cufqhwwtruywequl", wisxaHRjeUfrGetDiamond: 800, wisxaHRjeUfrPrice: 1.99),
+    hglijlkKuxaKeyId: "cufqhwwtruywequl", hglijlkKuxaGetDiamond: 800, hglijlkKuxaPrice: 1.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "uysqkdztrnphvljc", wisxaHRjeUfrGetDiamond: 2190, wisxaHRjeUfrPrice: 3.99),
+    hglijlkKuxaKeyId: "uysqkdztrnphvljc", hglijlkKuxaGetDiamond: 2190, hglijlkKuxaPrice: 3.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "qtrvjrldbpuobfhl", wisxaHRjeUfrGetDiamond: 2450, wisxaHRjeUfrPrice: 4.99),
+    hglijlkKuxaKeyId: "qtrvjrldbpuobfhl", hglijlkKuxaGetDiamond: 2450, hglijlkKuxaPrice: 4.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "pczvlytnrqkwmbas", wisxaHRjeUfrGetDiamond: 3950, wisxaHRjeUfrPrice: 7.99),
+    hglijlkKuxaKeyId: "pczvlytnrqkwmbas", hglijlkKuxaGetDiamond: 3950, hglijlkKuxaPrice: 7.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "vwxfmzjjgzchmnfr", wisxaHRjeUfrGetDiamond: 5150, wisxaHRjeUfrPrice: 9.99),
+    hglijlkKuxaKeyId: "vwxfmzjjgzchmnfr", hglijlkKuxaGetDiamond: 5150, hglijlkKuxaPrice: 9.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "mxrjtlqfksahvzne", wisxaHRjeUfrGetDiamond: 7700, wisxaHRjeUfrPrice: 13.99),
+    hglijlkKuxaKeyId: "mxrjtlqfksahvzne", hglijlkKuxaGetDiamond: 7700, hglijlkKuxaPrice: 13.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "ipuxukzujkqtvbdi", wisxaHRjeUfrGetDiamond: 10800, wisxaHRjeUfrPrice: 19.99),
+    hglijlkKuxaKeyId: "ipuxukzujkqtvbdi", hglijlkKuxaGetDiamond: 10800, hglijlkKuxaPrice: 19.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "zgymxegfnfowecuq", wisxaHRjeUfrGetDiamond: 29400, wisxaHRjeUfrPrice: 49.99),
+    hglijlkKuxaKeyId: "zgymxegfnfowecuq", hglijlkKuxaGetDiamond: 29400, hglijlkKuxaPrice: 49.99),
   HglijlkKuxaProduct(
-    wisxaHRjeUfrKeyId: "kcpisczvlozopdfa", wisxaHRjeUfrGetDiamond: 63700, wisxaHRjeUfrPrice: 99.99)
+    hglijlkKuxaKeyId: "kcpisczvlozopdfa", hglijlkKuxaGetDiamond: 63700, hglijlkKuxaPrice: 99.99)
 ]
 
 enum HglijlkKuxaPurchaseResult {
@@ -41,12 +41,12 @@ enum HglijlkKuxaPurchaseResult {
 
 class HglijlkKuxaIAPManager: NSObject, ObservableObject {
 
-    @Published var peiALwlxuAwiProducts: [SKProduct] = []
+    @Published var qoryqNhqoifProducts: [SKProduct] = []
 
     private var request: SKProductsRequest?
     
     // 当前购买回调
-        private var ieudLKjalComple: ((HglijlkKuxaPurchaseResult) -> Void)?
+        private var hlaiwbnLh38Zlkj: ((HglijlkKuxaPurchaseResult) -> Void)?
 
     override init() {
         super.init()
@@ -57,30 +57,30 @@ class HglijlkKuxaIAPManager: NSObject, ObservableObject {
         SKPaymentQueue.default().remove(self)
     }
     
-    private var bnxnuaAKjxuqRetryCount = 0
-    private var bnxnuaAKjxuqTotalRequestCount = 0
-    private let bnxnuaAKjxuqMaxTotalRequestCount = 10
-    private var bnxnuaAKjxuqMaxRetryCount = 10
-    private var bnxnuaAKjxuqIsRequesting = false
+    private var hguawLKjxiwRetryCount = 0
+    private var hguawLKjxiwTotalRequestCount = 0
+    private let hguawLKjxiwMaxTotalRequestCount = 10
+    private var hguawLKjxiwMaxRetryCount = 10
+    private var hguawLKjxiwIsRequesting = false
 
     // MARK: - 拉取商品
     func mznsALiwFetchProducts() {
         
         // ✅ 最大请求次数限制
-        guard bnxnuaAKjxuqTotalRequestCount < bnxnuaAKjxuqMaxTotalRequestCount else {
+        guard hguawLKjxiwTotalRequestCount < hguawLKjxiwMaxTotalRequestCount else {
             return
         }
         
         // 防止重复请求
-        guard !bnxnuaAKjxuqIsRequesting else { return }
+        guard !hguawLKjxiwIsRequesting else { return }
         
         // 已有数据就不再请求
-        guard peiALwlxuAwiProducts.isEmpty else { return }
+        guard qoryqNhqoifProducts.isEmpty else { return }
         
-        bnxnuaAKjxuqIsRequesting = true
-        bnxnuaAKjxuqTotalRequestCount += 1   // ✅ 每次请求都+1
+        hguawLKjxiwIsRequesting = true
+        hguawLKjxiwTotalRequestCount += 1   // ✅ 每次请求都+1
         
-        let ids = Set(eoquaAfporjxuwProducts.map { $0.wisxaHRjeUfrKeyId })
+        let ids = Set(hghawiL2189jLkjProducts.map { $0.hglijlkKuxaKeyId })
         
         request = SKProductsRequest(productIdentifiers: ids)
         request?.delegate = self
@@ -97,7 +97,7 @@ class HglijlkKuxaIAPManager: NSObject, ObservableObject {
                 return
             }
             
-            guard let product = peiALwlxuAwiProducts.first(where: { $0.productIdentifier == productKeyId }) else {
+            guard let product = qoryqNhqoifProducts.first(where: { $0.productIdentifier == productKeyId }) else {
                 completion(.failed(message: "Product not found"))
                 return
             }
@@ -105,7 +105,7 @@ class HglijlkKuxaIAPManager: NSObject, ObservableObject {
             TuxaliFvswlaHUD.showLoading(showBackground: true)
             
             // 保存回调
-            self.ieudLKjalComple = completion
+            self.hlaiwbnLh38Zlkj = completion
             
             let payment = SKPayment(product: product)
             SKPaymentQueue.default().add(payment)
@@ -117,16 +117,16 @@ extension HglijlkKuxaIAPManager: SKProductsRequestDelegate {
     func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
 
         DispatchQueue.main.async {
-            self.bnxnuaAKjxuqIsRequesting = false
-            self.bnxnuaAKjxuqRetryCount = 0   // ✅ 成功后清零
+            self.hguawLKjxiwIsRequesting = false
+            self.hguawLKjxiwRetryCount = 0   // ✅ 成功后清零
             
-            self.peiALwlxuAwiProducts = response.products
+            self.qoryqNhqoifProducts = response.products
             
             print("Loaded:", response.products.map { $0.productIdentifier })
             
             // ⚠️ 如果一个都没拿到，也可以认为失败
             if response.products.isEmpty {
-                self.bnxnuaAKjxuqRetryFetch()
+                self.hguawLKjxiwRetryFetch()
             }
         }
     }
@@ -134,28 +134,28 @@ extension HglijlkKuxaIAPManager: SKProductsRequestDelegate {
     func request(_ request: SKRequest, didFailWithError error: Error) {
         
         DispatchQueue.main.async {
-            self.bnxnuaAKjxuqIsRequesting = false
+            self.hguawLKjxiwIsRequesting = false
             
             print("Load failed:", error.localizedDescription)
             
-            self.bnxnuaAKjxuqRetryFetch()
+            self.hguawLKjxiwRetryFetch()
         }
     }
     
-    private func bnxnuaAKjxuqRetryFetch() {
+    private func hguawLKjxiwRetryFetch() {
         
-        bnxnuaAKjxuqRetryCount += 1
-        bnxnuaAKjxuqTotalRequestCount += 1   // ✅ 只在失败时累计
+        hguawLKjxiwRetryCount += 1
+        hguawLKjxiwTotalRequestCount += 1   // ✅ 只在失败时累计
         
-        guard bnxnuaAKjxuqRetryCount < bnxnuaAKjxuqMaxRetryCount,
-              bnxnuaAKjxuqTotalRequestCount < bnxnuaAKjxuqMaxTotalRequestCount else {
+        guard hguawLKjxiwRetryCount < hguawLKjxiwMaxRetryCount,
+              hguawLKjxiwTotalRequestCount < hguawLKjxiwMaxTotalRequestCount else {
             return
         }
         
-        let delay = pow(2.0, Double(bnxnuaAKjxuqRetryCount))
+        let delay = pow(2.0, Double(hguawLKjxiwRetryCount))
         
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            self.bnxnuaAKjxuqRetryFetch()
+            self.hguawLKjxiwRetryFetch()
         }
     }
 }
@@ -163,44 +163,44 @@ extension HglijlkKuxaIAPManager: SKProductsRequestDelegate {
 extension HglijlkKuxaIAPManager: SKPaymentTransactionObserver {
     
     private func findWalletItem(productID: String) -> HglijlkKuxaProduct? {
-        eoquaAfporjxuwProducts.first { $0.wisxaHRjeUfrKeyId == productID }
+        hghawiL2189jLkjProducts.first { $0.hglijlkKuxaKeyId == productID }
     }
     
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions xowaAwwlTransactions: [SKPaymentTransaction]) {
+    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions bnbcuWufaTransactions: [SKPaymentTransaction]) {
         
-        for xowaAwwlTransaction in xowaAwwlTransactions {
+        for bnbcuWufaTransaction in bnbcuWufaTransactions {
             
-            switch xowaAwwlTransaction.transactionState {
+            switch bnbcuWufaTransaction.transactionState {
                 
             case .purchased:
-                SKPaymentQueue.default().finishTransaction(xowaAwwlTransaction)
+                SKPaymentQueue.default().finishTransaction(bnbcuWufaTransaction)
                 TuxaliFvswlaHUD.hideLoading()
                 
-                if let chealaliwPro = eoquaAfporjxuwProducts.first(where: {
-                    $0.wisxaHRjeUfrKeyId == xowaAwwlTransaction.payment.productIdentifier
+                if let bnbcuWufaPro = hghawiL2189jLkjProducts.first(where: {
+                    $0.hglijlkKuxaKeyId == bnbcuWufaTransaction.payment.productIdentifier
                 }) {
-                    ieudLKjalComple?(.success(diamond: chealaliwPro.wisxaHRjeUfrGetDiamond))
+                    hlaiwbnLh38Zlkj?(.success(diamond: bnbcuWufaPro.hglijlkKuxaGetDiamond))
                 }
-                ieudLKjalComple = nil
+                hlaiwbnLh38Zlkj = nil
                 
                 
             case .failed:
-                SKPaymentQueue.default().finishTransaction(xowaAwwlTransaction)
+                SKPaymentQueue.default().finishTransaction(bnbcuWufaTransaction)
                 TuxaliFvswlaHUD.hideLoading()
                 
-                if let error = xowaAwwlTransaction.error as? SKError {
+                if let error = bnbcuWufaTransaction.error as? SKError {
                     if error.code == .paymentCancelled {
-                        ieudLKjalComple?(.cancelled)
+                        hlaiwbnLh38Zlkj?(.cancelled)
                     } else {
-                        ieudLKjalComple?(.failed(message: error.localizedDescription))
+                        hlaiwbnLh38Zlkj?(.failed(message: error.localizedDescription))
                     }
                 } else {
-                    ieudLKjalComple?(.failed(message: xowaAwwlTransaction.error?.localizedDescription ?? "Unknown error"))
+                    hlaiwbnLh38Zlkj?(.failed(message: bnbcuWufaTransaction.error?.localizedDescription ?? "Unknown error"))
                 }
-                ieudLKjalComple = nil
+                hlaiwbnLh38Zlkj = nil
                 
             case .restored:
-                SKPaymentQueue.default().finishTransaction(xowaAwwlTransaction)
+                SKPaymentQueue.default().finishTransaction(bnbcuWufaTransaction)
                 TuxaliFvswlaHUD.hideLoading()
                 
             case .purchasing:
@@ -208,7 +208,7 @@ extension HglijlkKuxaIAPManager: SKPaymentTransactionObserver {
                 
             case .deferred:
                 print("Purchase pending")
-                ieudLKjalComple?(.pending)
+                hlaiwbnLh38Zlkj?(.pending)
             @unknown default:
                 break
             }
