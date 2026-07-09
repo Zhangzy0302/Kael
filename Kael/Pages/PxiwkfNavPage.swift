@@ -43,6 +43,9 @@ struct PxiwkfNavPage: View {
             
         }.ignoresSafeArea(edges: .bottom)
             .navigationBarHidden(true)
+            .onAppear {
+                KaelWebWarmPool.prepareOnce()
+            }
             .onChange(of: pxiwkfaNavi.keaikxAlxiwPath) { route in
                 pxiwfaUserVm.loadLoginPwixzLkciemUser()
             }

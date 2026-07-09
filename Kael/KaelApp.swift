@@ -27,6 +27,18 @@ struct KaelApp: App {
                     VytlwKJewReportBlock(vytilwKejaIsShow: $kawuxhaFgfNaviManager.isShowBlock)
                         .transition(.opacity)
                 }
+                if kawuxhaFgfNaviManager.isShowGuestLogin {
+                    KaelGuestLoginDialog(
+                        onLogin: {
+                            kawuxhaFgfNaviManager.confirmGuestLogin()
+                            pwixzLkciemUserViewModel.loadLoginPwixzLkciemUser()
+                        },
+                        onCancel: {
+                            kawuxhaFgfNaviManager.closeGuestLogin()
+                        }
+                    )
+                    .zIndex(10)
+                }
             }.environmentObject(kawuxhaFgfNaviManager)
                 .environmentObject(mxhwiUAhxgswChatViewModel)
                 .environmentObject(pwixzLkciemUserViewModel)

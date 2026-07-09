@@ -174,6 +174,11 @@ extension KaelIwuzHacStorageManager {
     return storage.object(forKey: Keys.sienAlxjbjCurrentUserId) as? String ?? "95959"
   }
     
+  func currentUserIsVisitor() -> Bool {
+    guard let currentUser = getUserById(userId: getCurrentUserId()) else { return false }
+    return currentUser.pwixzLkciemIsVisitor && currentUser.pwixzLkciemIsDeleted == 0
+  }
+    
     func markCurrentUserDeleted() {
         let currentUserId = getCurrentUserId()
         

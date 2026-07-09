@@ -42,6 +42,10 @@ struct PwixzLkciemUser: Codable, Identifiable, Equatable {
 }
 
 extension PwixzLkciemUser {
+    
+    var pwixzLkciemIsVisitor: Bool {
+        pwixzLkciemEmail.isEmpty && pwixzLkciemPassword.isEmpty
+    }
 
     init(json: [String: Any]) {
 
@@ -107,6 +111,10 @@ final class PwixzLkciemUserViewModel: ObservableObject {
       currentUserID = uid
     currentUser = users.first { $0.pwixzLkciemUserId == uid }
   }
+    
+  var isCurrentUserVisitor: Bool {
+    currentUser?.pwixzLkciemIsVisitor ?? false
+  }
 
   // 登录
   func loginByEmailAndPasswordPwixzLkciem(email: String, password: String) -> PwixzLkciemUser? {
@@ -133,8 +141,7 @@ final class PwixzLkciemUserViewModel: ObservableObject {
         
         // ✅ 1. 查找已有游客（email & password 为空 + 未删除）
         if let existVisitor = users.first(where: {
-            $0.pwixzLkciemEmail.isEmpty &&
-            $0.pwixzLkciemPassword.isEmpty &&
+            $0.pwixzLkciemIsVisitor &&
             $0.pwixzLkciemIsDeleted == 0
         }) {
             print(existVisitor)
@@ -222,10 +229,24 @@ final class PwixzLkciemUserViewModel: ObservableObject {
     storage.setCurrentUserId("95959")
     loadLoginPwixzLkciemUser()
   }
+    
+  // 修改用户信息
+  func editPwixzLkciemUserInfo(name: String, avatar: String) {
+    guard let currentUser else { return }
+    storage.updateUser(uid: currentUser.pwixzLkciemUserId) { user in
+      var newUser: PwixzLkciemUser = user
+      newUser.pwixzLkciemUserName = name
+      newUser.pwixzLkciemAvatar = avatar
+      return newUser
+    }
+
+    loadLoginPwixzLkciemUser()
+  }
 
   // 切换拉黑状态
   func toggleUserIsBlocked(blockUserId: String) {
-    storage.updateUser(uid: currentUser!.pwixzLkciemUserId) { user in
+    guard let currentUser, !currentUser.pwixzLkciemIsVisitor else { return }
+    storage.updateUser(uid: currentUser.pwixzLkciemUserId) { user in
       var newUser: PwixzLkciemUser = user
       if newUser.pwixzLkciemBlacklist.contains(blockUserId) {
         newUser.pwixzLkciemBlacklist.removeAll { $0 == blockUserId }
@@ -241,7 +262,8 @@ final class PwixzLkciemUserViewModel: ObservableObject {
 
   // 切换是否喜欢视频作品
   func toggleVideoIsLiked(_ videoId: String) {
-    storage.updateUser(uid: currentUser!.pwixzLkciemUserId) { user in
+    guard let currentUser, !currentUser.pwixzLkciemIsVisitor else { return }
+    storage.updateUser(uid: currentUser.pwixzLkciemUserId) { user in
       var newUser: PwixzLkciemUser = user
       if newUser.pwixzLkciemLikePosts.contains(videoId) {
         newUser.pwixzLkciemLikePosts.removeAll { $0 == videoId }
@@ -258,7 +280,8 @@ final class PwixzLkciemUserViewModel: ObservableObject {
 
   // 更新用户钻石数
   func increaseUserDiamond(diamond: Int) {
-    storage.updateUser(uid: currentUser!.pwixzLkciemUserId) { user in
+    guard let currentUser, !currentUser.pwixzLkciemIsVisitor else { return }
+    storage.updateUser(uid: currentUser.pwixzLkciemUserId) { user in
       var newUser: PwixzLkciemUser = user
       newUser.pwixzLkciemWalletBalance = newUser.pwixzLkciemWalletBalance + diamond
       return newUser

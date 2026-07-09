@@ -103,18 +103,12 @@ struct XpavheSignXePage: View {
                                 TuxaliFvswlaHUD.toast(.error("Passwords do not match"))
                                 return
                             }
-                            let xpaxiIWjnbuNEwUserInfo = xpavhUserVM.registerPwixzLkciem(email: xpavheEmail, password: xpavhePWd)
-                            if xpaxiIWjnbuNEwUserInfo == nil {
-                                TuxaliFvswlaHUD.toast(.error("This email is already registered"))
-                                return
-                            }else {
-                                Task{
-                                    TuxaliFvswlaHUD.showLoading(showBackground: true)
-                                    await delay(0.8)
-                                    TuxaliFvswlaHUD.hideLoading()
-                                    xpawiSignnavi.popToRoot()
-                                }
-                            }
+                            let email = xpavheEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+                            let registerPath = XpavheSignXePage.buildRegisterWebPath(
+                                email: email,
+                                password: xpavhePWd
+                            )
+                            xpawiSignnavi.push(.fhHhvckaeudeWeb(fhHguwvWebUrl: registerPath))
                         case .xaiwlkSawForgot:
                             return
                         }
@@ -136,6 +130,17 @@ struct XpavheSignXePage: View {
             xpawvheCurrentStatus = xpveheguideType
         }.navigationBarHidden(true)
             .background(VhuaGehuSwipeBack())
+    }
+    
+    private static func buildRegisterWebPath(email: String, password: String) -> String {
+        let queryItems = [
+            URLQueryItem(name: "email", value: email),
+            URLQueryItem(name: "password", value: password)
+        ]
+        var components = URLComponents()
+        components.queryItems = queryItems
+        let query = components.percentEncodedQuery.map { "?\($0)" } ?? ""
+        return "register\(query)"
     }
     
     struct XpaveiaAucuInputBox: View {
@@ -161,4 +166,3 @@ struct XpavheSignXePage: View {
         }
     }
 }
-

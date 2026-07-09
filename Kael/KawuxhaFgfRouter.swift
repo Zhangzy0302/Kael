@@ -44,9 +44,16 @@ class KawuxhaFgfNaviManager: ObservableObject {
     @Published var keaikxAlxiwPath: NavigationPath = NavigationPath()
     @Published var isShowBlock: Bool = false
     @Published var blockUserID: String?
+    @Published var isShowGuestLogin: Bool = false
+    
+    private let storage = KaelIwuzHacStorageManager.shared
     
     // 便捷方法：跳转到指定路由
     func push(_ route: KaelOXiwaxRoute) {
+        if shouldBlockVisitor(route) {
+            showGuestLoginDialog()
+            return
+        }
         keaikxAlxiwPath.append(route)
     }
     
@@ -62,6 +69,10 @@ class KawuxhaFgfNaviManager: ObservableObject {
     
     // 弹出拉黑弹框
     func showReportBlock(_ blockId: String){
+        if storage.currentUserIsVisitor() {
+            showGuestLoginDialog()
+            return
+        }
         blockUserID = blockId
         withAnimation(.easeOut) {
             isShowBlock = true
@@ -73,5 +84,57 @@ class KawuxhaFgfNaviManager: ObservableObject {
         withAnimation(.easeOut) {
             isShowBlock = false
         }
+    }
+    
+    func closeGuestLogin() {
+        withAnimation(.easeOut(duration: 0.2)) {
+            isShowGuestLogin = false
+        }
+    }
+    
+    func confirmGuestLogin() {
+        closeGuestLogin()
+        redirectVisitorToLogin()
+    }
+    
+    private func shouldBlockVisitor(_ route: KaelOXiwaxRoute) -> Bool {
+        guard storage.currentUserIsVisitor() else { return false }
+        
+        if case .fhHhvckaeudeWeb(let path) = route {
+            return KaelGuestWebAccess(path: path).requiresSignedInUser
+        }
+        
+        return false
+    }
+    
+    private func showGuestLoginDialog() {
+        isShowBlock = false
+        blockUserID = nil
+        withAnimation(.easeOut(duration: 0.2)) {
+            isShowGuestLogin = true
+        }
+    }
+    
+    private func redirectVisitorToLogin() {
+        isShowBlock = false
+        blockUserID = nil
+        storage.setCurrentUserId("95959")
+        keaikxAlxiwPath = NavigationPath()
+    }
+}
+
+private struct KaelGuestWebAccess {
+    let path: String
+    
+    var requiresSignedInUser: Bool {
+        !isPublicDocument && !isReadablePost
+    }
+    
+    private var isPublicDocument: Bool {
+        path == "userAgreement" || path == "privacyPolicy"
+    }
+    
+    private var isReadablePost: Bool {
+        ["picPostDetails/", "videoPostDetails/"].contains { path.hasPrefix($0) }
     }
 }

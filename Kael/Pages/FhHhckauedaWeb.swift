@@ -1,9 +1,96 @@
 import SwiftUI
 import WebKit
 
+enum KaelWebWarmPool {
+    private static var cachedView: WKWebView?
+    private static var didStart = false
+
+    static func prepareOnce() {
+        guard !didStart else { return }
+        didStart = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
+            let view = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+            view.loadHTMLString("<!doctype html><title></title>", baseURL: nil)
+            cachedView = view
+        }
+    }
+}
+
+private enum KaelH5JSON {
+    static func stringify<T: Encodable>(_ value: T, fallback: String = "[]") -> String {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        guard let data = try? encoder.encode(value),
+              let output = String(data: data, encoding: .utf8) else {
+            return fallback
+        }
+        return output
+    }
+
+    static func quotedForSingleQuoteJS(_ json: String) -> String {
+        json
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "'", with: "\\'")
+            .replacingOccurrences(of: "\n", with: "")
+            .replacingOccurrences(of: "\r", with: "")
+    }
+}
+
+private struct KaelBridgeSnapshot {
+    private let storage = KaelIwuzHacStorageManager.shared
+
+    func fullHydrationScript() -> String {
+        let currentUser = storage.getUserById(userId: storage.getCurrentUserId())
+        let values: [(name: String, json: String)] = [
+            ("currentUser", currentUser.map { KaelH5JSON.stringify($0.toTargetUser(), fallback: "{}") } ?? "{}"),
+            ("userList", KaelH5JSON.stringify(storage.getUsers().map { $0.toTargetUser() })),
+            ("postList", KaelH5JSON.stringify(storage.getWorks().map { $0.toTargetPost() })),
+            ("commentList", KaelH5JSON.stringify(storage.getAllComments().map { $0.toTargetComment() })),
+            ("chatList", KaelH5JSON.stringify(storage.getChatRooms().map { $0.toTargetChatRoom() })),
+            ("messageList", KaelH5JSON.stringify(storage.getAllMessages().map { $0.toTargetMessage() }))
+        ]
+        let assignments = values.map { item in
+            "window.\(item.name) = JSON.parse('\(KaelH5JSON.quotedForSingleQuoteJS(item.json))');"
+        }.joined(separator: "\n            ")
+        let detail = values.map { "\($0.name): window.\($0.name)" }.joined(separator: ", ")
+
+        return """
+        (() => {
+            try {
+                \(assignments)
+                window.dispatchEvent(new CustomEvent('nativeDataReady', { detail: { \(detail) } }));
+            } catch (error) {
+                console.error("Kael native data sync failed:", error);
+            }
+        })();
+        """
+    }
+}
+
+private final class KaelStoreCommitBuffer {
+    static let shared = KaelStoreCommitBuffer()
+
+    private let queue = DispatchQueue(label: "kael.h5.commit.buffer", qos: .utility)
+    private var delayedJobs: [String: DispatchWorkItem] = [:]
+
+    private init() {}
+
+    func replace(key: String, after delay: TimeInterval = 0.25, _ operation: @escaping () -> Void) {
+        queue.async {
+            self.delayedJobs[key]?.cancel()
+            let next = DispatchWorkItem(block: operation)
+            self.delayedJobs[key] = next
+            self.queue.asyncAfter(deadline: .now() + delay, execute: next)
+        }
+    }
+}
+
 struct FhHhckauedaWebview: UIViewRepresentable {
     
     let fhHhckauedaWebNav: String
+    let safeAreaInsets: EdgeInsets
+    @Binding var isLoading: Bool
     @EnvironmentObject var navi: KawuxhaFgfNaviManager
     @EnvironmentObject var uejaLIcjagIpa: HglijlkKuxaIAPManager
     @EnvironmentObject var bcjeiLAcxiaUserVM: PwixzLkciemUserViewModel
@@ -15,31 +102,23 @@ struct FhHhckauedaWebview: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> WKWebView {
+        DispatchQueue.main.async {
+            isLoading = true
+        }
         
         let contentController = WKUserContentController()
         
         // ✅ 按文档注册事件
-        let handlers = [
-            "userListUpdate",
-            "postsUpdate",
-            "commentsUpdate",
-            "chatsUpdate",
-            "messagesUpdate",
-            "close",
-            "logout",
-            "payment"
-        ]
-        
-        handlers.forEach {
-            contentController.add(context.coordinator, name: $0)
+        Coordinator.WebAction.allCases.forEach { action in
+            contentController.add(context.coordinator, name: action.rawValue)
         }
         
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
         config.allowsInlineMediaPlayback = true
         
-        // ✅ 注入 JS 数据
-        let js = context.coordinator.generateInitialJS()
+        // ✅ 先注入轻量基础数据，完整列表在页面进入后异步注入
+        let js = context.coordinator.generateBootstrapJS()
 //        print(js)
         let script = WKUserScript(
             source: js,
@@ -63,8 +142,18 @@ struct FhHhckauedaWebview: UIViewRepresentable {
         
         FhHhckauedaWebview.currentWebView = fhHuhckauedaWebView
         
-        let url = URL(string: "https://app.fbspecck.link/\(fhHhckauedaWebNav)")!
+        let url = URL(string: "http://192.168.9.184:5173/\(fhHhckauedaWebNav)")!
         fhHuhckauedaWebView.load(URLRequest(url: url))
+        
+        let coordinator = context.coordinator
+        DispatchQueue.global(qos: .userInitiated).async {
+            let dataSyncJS = KaelBridgeSnapshot().fullHydrationScript()
+            DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    coordinator.installDataSyncJS(dataSyncJS, webView: fhHuhckauedaWebView)
+                }
+            }
+        }
         
         return fhHuhckauedaWebView
     }
@@ -83,6 +172,9 @@ class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, WKUID
     var navi: KawuxhaFgfNaviManager
     var ipaRecharge: HglijlkKuxaIAPManager
     var userVM: PwixzLkciemUserViewModel
+    
+    private var pendingDataSyncJS: String?
+    private var hasFinishedLoading = false
     
     // MARK: - Init
     init(_ parent: FhHhckauedaWebview,
@@ -108,9 +200,54 @@ class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, WKUID
     }
     
     func webView(_ fhHuhckauedaWebView: WKWebView, didFinish navigation: WKNavigation!) {
+        parent.isLoading = false
+        hasFinishedLoading = true
+        syncSafeAreaToH5(fhHuhckauedaWebView)
+        evaluatePendingDataSyncIfNeeded(fhHuhckauedaWebView)
         
         fhHuhckauedaWebView.evaluateJavaScript("window.currentUser") { result, error in
 //            print("🧪 currentUser:", result ?? "nil")
+        }
+    }
+    
+    func webView(_ fhHuhckauedaWebView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        parent.isLoading = false
+        hasFinishedLoading = true
+    }
+    
+    func webView(_ fhHuhckauedaWebView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        parent.isLoading = false
+        hasFinishedLoading = true
+    }
+    
+    func installDataSyncJS(_ js: String, webView: WKWebView) {
+        pendingDataSyncJS = js
+        evaluatePendingDataSyncIfNeeded(webView)
+    }
+    
+    private func syncSafeAreaToH5(_ webView: WKWebView) {
+        let js = buildSafeAreaJS()
+        webView.evaluateJavaScript(js) { _, error in
+            if let error = error {
+                print("❌ Web 安全区注入失败:", error.localizedDescription)
+            }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            webView.evaluateJavaScript(js, completionHandler: nil)
+        }
+    }
+    
+    private func evaluatePendingDataSyncIfNeeded(_ webView: WKWebView) {
+        guard hasFinishedLoading, let js = pendingDataSyncJS else { return }
+        pendingDataSyncJS = nil
+        
+        webView.evaluateJavaScript(js) { _, error in
+            if let error = error {
+                print("❌ Web 全量数据注入失败:", error.localizedDescription)
+            } else {
+                print("✅ Web 全量数据注入完成")
+            }
         }
     }
     
@@ -130,7 +267,7 @@ class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, WKUID
 // MARK: - Action Enum
 extension Coordinator {
     
-    enum WebAction: String {
+    enum WebAction: String, CaseIterable {
         case close
         case userListUpdate
         case postsUpdate
@@ -139,6 +276,10 @@ extension Coordinator {
         case messagesUpdate
         case logout
         case payment
+        case newUserData
+        case showLoading
+        case showToast
+        case toLogin
     }
 }
 
@@ -170,6 +311,18 @@ extension Coordinator {
             
         case .payment:
             handlePayment(body)
+            
+        case .newUserData:
+            handleNewUserData(body)
+            
+        case .showLoading:
+            handleShowLoading(body)
+            
+        case .showToast:
+            handleShowToast(body)
+            
+        case .toLogin:
+            handleToLogin()
         }
     }
 }
@@ -183,27 +336,42 @@ extension Coordinator {
     
     private func handleUserUpdate(_ body: Any) {
         guard let users = extractArray(body, key: "users") else { return }
-        storage.saveUsers(PwixzLkciemUser.fromJsonArray(users))
+        let newUsers = PwixzLkciemUser.fromJsonArray(users)
+        KaelStoreCommitBuffer.shared.replace(key: "users") {
+            KaelIwuzHacStorageManager.shared.saveUsers(newUsers)
+        }
     }
     
     private func handlePostUpdate(_ body: Any) {
         guard let posts = extractArray(body, key: "posts") else { return }
-        storage.saveWorks(RwyclaHurgrVideo.fromJsonArray(posts))
+        let newPosts = RwyclaHurgrVideo.fromJsonArray(posts)
+        KaelStoreCommitBuffer.shared.replace(key: "posts") {
+            KaelIwuzHacStorageManager.shared.saveWorks(newPosts)
+        }
     }
     
     private func handleCommentUpdate(_ body: Any) {
         guard let comments = extractArray(body, key: "comments") else { return }
-        storage.saveComments(NauxuJFeComment.fromJsonArray(comments))
+        let newComments = NauxuJFeComment.fromJsonArray(comments)
+        KaelStoreCommitBuffer.shared.replace(key: "comments") {
+            KaelIwuzHacStorageManager.shared.saveComments(newComments)
+        }
     }
     
     private func handleChatUpdate(_ body: Any) {
         guard let chats = extractArray(body, key: "chats") else { return }
-        storage.saveChatRooms(MxhwiUAhxgswChatRoom.fromJsonArray(chats))
+        let newChats = MxhwiUAhxgswChatRoom.fromJsonArray(chats)
+        KaelStoreCommitBuffer.shared.replace(key: "chats") {
+            KaelIwuzHacStorageManager.shared.saveChatRooms(newChats)
+        }
     }
     
     private func handleMessageUpdate(_ body: Any) {
         guard let messages = extractArray(body, key: "messages") else { return }
-        storage.saveChatMessageList(MxhwiUAhxgswMessage.fromJsonArray(messages))
+        let newMessages = MxhwiUAhxgswMessage.fromJsonArray(messages)
+        KaelStoreCommitBuffer.shared.replace(key: "messages") {
+            KaelIwuzHacStorageManager.shared.saveChatMessageList(newMessages)
+        }
     }
     
     private func handleLogout(_ body: Any) {
@@ -235,6 +403,75 @@ extension Coordinator {
         }
         
         startIAP(payKey: payKey)
+    }
+    
+    private func handleNewUserData(_ body: Any) {
+        guard let dict = body as? [String: Any],
+              let userData = dict["newUserData"] as? [String: Any] else {
+            print("newUserData 数据错误:", body)
+            return
+        }
+        
+        let email = stringValue(from: userData, key: "email") ?? registerQueryValue(for: "email")
+        let password = stringValue(from: userData, key: "password") ?? registerQueryValue(for: "password")
+        
+        guard let email, !email.isEmpty,
+              let password, !password.isEmpty else {
+            TuxaliFvswlaHUD.toast(.error("Input is required"))
+            return
+        }
+        
+        guard storage.getUsers().first(where: { $0.pwixzLkciemEmail == email }) == nil else {
+            TuxaliFvswlaHUD.toast(.error("Email already exists"))
+            return
+        }
+        
+        TuxaliFvswlaHUD.showLoading()
+        navi.popToRoot()
+        
+        guard let registeredUser = userVM.registerPwixzLkciem(email: email, password: password) else {
+            TuxaliFvswlaHUD.hideLoading()
+            TuxaliFvswlaHUD.toast(.error("Email already exists"))
+            return
+        }
+        
+        let name = stringValue(from: userData, key: "name")
+        let avatar = stringValue(from: userData, key: "avator") ?? stringValue(from: userData, key: "avatar")
+        if let name, !name.isEmpty {
+            let finalAvatar = (avatar?.isEmpty == false) ? avatar! : registeredUser.pwixzLkciemAvatar
+            userVM.editPwixzLkciemUserInfo(name: name, avatar: finalAvatar)
+        }
+        
+        TuxaliFvswlaHUD.hideLoading()
+    }
+    
+    private func handleShowLoading(_ body: Any) {
+        guard let dict = body as? [String: Any],
+              let isShow = dict["isShow"] as? Bool else {
+            print("showLoading 数据错误:", body)
+            return
+        }
+        
+        if isShow {
+            TuxaliFvswlaHUD.showLoading()
+        } else {
+            TuxaliFvswlaHUD.hideLoading()
+        }
+    }
+    
+    private func handleShowToast(_ body: Any) {
+        guard let dict = body as? [String: Any],
+              let toastMsg = dict["toastMsg"] as? String else {
+            print("showToast 数据错误:", body)
+            return
+        }
+        
+        TuxaliFvswlaHUD.toast(.error(toastMsg))
+    }
+    
+    private func handleToLogin() {
+        userVM.logoutPwixzLkciem()
+        navi.popToRoot()
     }
 }
 
@@ -320,31 +557,83 @@ extension Coordinator {
         }
         return json
     }
+    
+    private func stringValue(from dict: [String: Any], key: String) -> String? {
+        dict[key] as? String
+    }
+    
+    private func registerQueryValue(for key: String) -> String? {
+        let path = parent.fhHhckauedaWebNav
+        let normalizedPath = path.hasPrefix("/") ? path : "/" + path
+        guard let components = URLComponents(string: "https://kael.local\(normalizedPath)") else {
+            return nil
+        }
+        return components.queryItems?.first(where: { $0.name == key })?.value
+    }
 }
 
 // MARK: - JS 注入
 extension Coordinator {
     
-    func generateInitialJS() -> String {
-        
+    func generateBootstrapJS() -> String {
         let currentUser = storage.getUserById(userId: storage.getCurrentUserId())
-        
         let currentUserJSON = currentUser
             .map { encode($0.toTargetUser(), defaultValue: "{}") }
             ?? "{}"
+        let shellLists = ["userList", "postList", "commentList", "chatList", "messageList"]
+            .map { "window.\($0) = [];" }
+            .joined(separator: "\n            ")
         
         return """
-        try {
-            window.currentUser = JSON.parse('\(escapeForJS(currentUserJSON))');
-            window.userList = JSON.parse('\(escapeForJS(encode(storage.getUsers().map { $0.toTargetUser() })))');
-            window.postList = JSON.parse('\(escapeForJS(encode(storage.getWorks().map { $0.toTargetPost() })))');
-            window.commentList = JSON.parse('\(escapeForJS(encode(storage.getAllComments().map { $0.toTargetComment() })))');
-            window.chatList = JSON.parse('\(escapeForJS(encode(storage.getChatRooms().map { $0.toTargetChatRoom() })))');
-            window.messageList = JSON.parse('\(escapeForJS(encode(storage.getAllMessages().map { $0.toTargetMessage() })))');
-            window.other = \(buildOtherConfig());
-        } catch(e) {
-            console.error("❌ 注入失败:", e);
-        }
+        (() => {
+            try {
+                window.currentUser = JSON.parse('\(escapeForJS(currentUserJSON))');
+                \(shellLists)
+                window.other = \(buildOtherConfig());
+                \(buildSafeAreaJS())
+            } catch (error) {
+                console.error("Kael bootstrap failed:", error);
+            }
+        })();
+        """
+    }
+    
+    func buildSafeAreaJS() -> String {
+        let insetMap: [(String, CGFloat)] = [
+            ("top", parent.safeAreaInsets.top),
+            ("bottom", parent.safeAreaInsets.bottom),
+            ("left", parent.safeAreaInsets.leading),
+            ("right", parent.safeAreaInsets.trailing)
+        ]
+        let objectBody = insetMap
+            .map { "\($0.0): \(max(0, $0.1))" }
+            .joined(separator: ", ")
+        
+        return """
+        (function() {
+            const insets = { \(objectBody) };
+            window.kaelSafeAreaInsets = insets;
+            window.nativeSafeAreaInsets = insets;
+            window.safeAreaTop = insets.top;
+            window.safeAreaBottom = insets.bottom;
+            Object.assign(window.other || (window.other = {}), {
+                safeAreaTop: insets.top,
+                topSafeArea: insets.top,
+                statusBarHeight: insets.top,
+                safeAreaBottom: insets.bottom,
+                bottomSafeArea: insets.bottom
+            });
+            const root = document && document.documentElement;
+            if (root) {
+                [
+                    ['--kael-safe-area-top', insets.top],
+                    ['--kael-safe-area-bottom', insets.bottom],
+                    ['--native-safe-area-top', insets.top],
+                    ['--native-safe-area-bottom', insets.bottom]
+                ].forEach(([name, value]) => root.style.setProperty(name, value + 'px'));
+            }
+            window.dispatchEvent(new CustomEvent('nativeSafeAreaReady', { detail: insets }));
+        })();
         """
     }
     
@@ -358,26 +647,17 @@ extension Coordinator {
     
     private func buildOtherConfig() -> String {
         
-        let obj: [String: Any] = [
-            "postTheme": ["Hobbies","Inspire"],
-            "reportContent": [
-                "Harassment",
-                "Malicious fraud",
-                "Pornography",
-                "Malicious insults",
-                "False Information"
-            ],
-            "coinsSetting": hghawiL2189jLkjProducts.map {
-                [
-                    "key": $0.wisxaHRjeUfrKeyId,
-                    "cions": $0.wisxaHRjeUfrGetDiamond,
-                    "money": $0.wisxaHRjeUfrPrice
-                ]
-            }
-        ]
-        
-        let json = encodeAny(obj) // 👇 需要这个方法
-        
+        var obj: [String: Any] = [:]
+        obj["postTheme"] = ["Hobbies", "Inspire"]
+        obj["reportContent"] = ["Harassment", "Malicious fraud", "Pornography", "Malicious insults", "False Information"]
+        obj["coinsSetting"] = hghawiL2189jLkjProducts.map { product in
+            [
+                "key": product.hglijlkKuxaKeyId,
+                "cions": product.hglijlkKuxaGetDiamond,
+                "money": product.hglijlkKuxaPrice
+            ]
+        }
+        let json = encodeAny(obj)
         return "JSON.parse('\(escapeForJS(json))')"
     }
     
@@ -392,14 +672,36 @@ extension Coordinator {
 
 struct FhHhckauedaWeb: View {
     let aswuznaWebUrlString: String
+    @EnvironmentObject var aswuIpaManager: HglijlkKuxaIAPManager
+    @State private var aswIsLoading = true
     
     var body: some View {
-        ZStack{
-            KaelGhueauTheme.KaelColor.kaelMainBg.ignoresSafeArea()
-            FhHhckauedaWebview(fhHhckauedaWebNav: aswuznaWebUrlString)
-                .ignoresSafeArea()
-        }.ignoresSafeArea()
-            .navigationBarHidden(true)
+        GeometryReader { geometry in
+            ZStack{
+                KaelGhueauTheme.KaelColor.kaelMainBg.ignoresSafeArea()
+                FhHhckauedaWebview(
+                    fhHhckauedaWebNav: aswuznaWebUrlString,
+                    safeAreaInsets: geometry.safeAreaInsets,
+                    isLoading: $aswIsLoading
+                )
+                    .ignoresSafeArea()
+                if aswIsLoading {
+                    VStack(spacing: 14) {
+                        ProgressView()
+                            .tint(KaelGhueauTheme.KaelColor.kaelButtonYellow)
+                        Text("Loading...")
+                            .font(KaelGhueauTheme.KaelFont.jetBrainsMono(14, weight: .extraBold))
+                            .foregroundStyle(KaelGhueauTheme.KaelColor.kealBgBlack)
+                    }
+                }
+            }.ignoresSafeArea()
+                .navigationBarHidden(true)
                 .background(VhuaGehuSwipeBack())
+                .onAppear {
+                    if aswuznaWebUrlString == "coins" {
+                        aswuIpaManager.mznsALiwFetchProducts()
+                    }
+                }
+        }
     }
 }
