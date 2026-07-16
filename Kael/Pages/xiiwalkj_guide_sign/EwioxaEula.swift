@@ -34,7 +34,7 @@ struct EwioxaEula: View {
                         Text("Terms of Use")
                             .font(KaelGhueauTheme.KaelFont.jetBrainsMono(14, weight: .regular))
                             .foregroundStyle(KaelGhueauTheme.KaelColor.kealBgBlack)
-                            .underline()
+                            .kaelTextUnderline()
                             .onTapGesture {
                                 ewialkxNavi.push(.fhHhvckaeudeWeb(fhHguwvWebUrl: "userAgreement"))
                             }
@@ -42,7 +42,7 @@ struct EwioxaEula: View {
                         Text("Privacy Policy")
                             .font(KaelGhueauTheme.KaelFont.jetBrainsMono(14, weight: .regular))
                             .foregroundStyle(KaelGhueauTheme.KaelColor.kealBgBlack)
-                            .underline()
+                            .kaelTextUnderline()
                             .onTapGesture {
                                 ewialkxNavi.push(.fhHhvckaeudeWeb(fhHguwvWebUrl: "privacyPolicy"))
                             }

@@ -89,7 +89,7 @@ struct YdkalxMicjGuidePage: View {
                         Text("Sign up")
                             .font(KaelGhueauTheme.KaelFont.jetBrainsMono(14, weight: .regular))
                             .foregroundStyle(Color(red: 51/255, green: 51/255, blue: 51/255))
-                            .underline()
+                            .kaelTextUnderline(Color(red: 51/255, green: 51/255, blue: 51/255))
                             .onTapGesture {
                                 if !PyifkaLvtjhfState.pyifkaLvtjhfAgreeEULA {
                                     ydkalMcijNavi.push(.ewioxaEula)
@@ -131,7 +131,7 @@ struct YdkalxMicjGuidePage: View {
                                 Text("User Agreement")
                                     .font(KaelGhueauTheme.KaelFont.jetBrainsMono(14, weight: .regular))
                                     .foregroundStyle(Color(red: 51/255, green: 51/255, blue: 51/255))
-                                    .underline()
+                                    .kaelTextUnderline(Color(red: 51/255, green: 51/255, blue: 51/255))
                                     .onTapGesture {
                                         ydkalMcijNavi.push(.fhHhvckaeudeWeb(fhHguwvWebUrl: "userAgreement"))
                                     }
@@ -143,7 +143,7 @@ struct YdkalxMicjGuidePage: View {
                             Text("Privacy Policy")
                                 .font(KaelGhueauTheme.KaelFont.jetBrainsMono(14, weight: .regular))
                                 .foregroundStyle(Color(red: 51/255, green: 51/255, blue: 51/255))
-                                .underline()
+                                .kaelTextUnderline(Color(red: 51/255, green: 51/255, blue: 51/255))
                                 .onTapGesture {
                                     ydkalMcijNavi.push(.fhHhvckaeudeWeb(fhHguwvWebUrl: "privacyPolicy"))
                                 }

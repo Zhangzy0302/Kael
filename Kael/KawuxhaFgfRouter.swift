@@ -13,35 +13,23 @@ struct KawuxhaFgfRouter: View {
     private var kalaiAstorage = KaelIwuzHacStorageManager.shared
     
     var body: some View {
-        NavigationStack(path: $fwoaWiakcPath.keaikxAlxiwPath){
+        NavigationView {
             Group {
                 if kalaiAstorage.getCurrentUserId() == "95959" {
                     YdkalxMicjGuidePage()
                 }else {
                     PxiwkfNavPage()
                 }
-                
-            }.navigationDestination(for: KaelOXiwaxRoute.self) { route in
-                    switch route {
-                    case .ewioxaEula:
-                        EwioxaEula()
-                    case .xpavheSignXePage(let xpveheguideType):
-                        XpavheSignXePage(xpveheguideType: xpveheguideType)
-                    case .fhHhvckaeudeWeb(let fhHguwvWebUrl):
-                        FhHhckauedaWeb(aswuznaWebUrlString: fhHguwvWebUrl)
-                    case .pxiwkfNavPage:
-                        PxiwkfNavPage()
-                    }
-                    
-                }
-                
+            }
+            .background(KaelRouteLink(depth: 0))
         }
+        .navigationViewStyle(.stack)
     }
 }
 
 class KawuxhaFgfNaviManager: ObservableObject {
     // 核心：全局共享的导航路径
-    @Published var keaikxAlxiwPath: NavigationPath = NavigationPath()
+    @Published var keaikxAlxiwPath: [KaelOXiwaxRoute] = []
     @Published var isShowBlock: Bool = false
     @Published var blockUserID: String?
     @Published var isShowGuestLogin: Bool = false
@@ -59,12 +47,13 @@ class KawuxhaFgfNaviManager: ObservableObject {
     
     // 便捷方法：返回上一页
     func pop() {
+        guard !keaikxAlxiwPath.isEmpty else { return }
         keaikxAlxiwPath.removeLast()
     }
     
     // 便捷方法：返回根页面
     func popToRoot() {
-        keaikxAlxiwPath = NavigationPath()
+        keaikxAlxiwPath.removeAll()
     }
     
     // 弹出拉黑弹框
@@ -119,7 +108,60 @@ class KawuxhaFgfNaviManager: ObservableObject {
         isShowBlock = false
         blockUserID = nil
         storage.setCurrentUserId("95959")
-        keaikxAlxiwPath = NavigationPath()
+        keaikxAlxiwPath.removeAll()
+    }
+    
+    func popRoutes(from depth: Int) {
+        guard depth >= 0, keaikxAlxiwPath.count > depth else { return }
+        keaikxAlxiwPath.removeSubrange(depth..<keaikxAlxiwPath.count)
+    }
+}
+
+private struct KaelRouteLink: View {
+    @EnvironmentObject var fwoaWiakcPath: KawuxhaFgfNaviManager
+    let depth: Int
+    
+    var body: some View {
+        NavigationLink(
+            destination: destination,
+            isActive: Binding(
+                get: { fwoaWiakcPath.keaikxAlxiwPath.count > depth },
+                set: { isActive in
+                    if !isActive {
+                        fwoaWiakcPath.popRoutes(from: depth)
+                    }
+                }
+            ),
+            label: EmptyView.init
+        )
+        .hidden()
+    }
+    
+    @ViewBuilder
+    private var destination: some View {
+        if fwoaWiakcPath.keaikxAlxiwPath.indices.contains(depth) {
+            KaelRouteView(route: fwoaWiakcPath.keaikxAlxiwPath[depth])
+                .background(KaelRouteLink(depth: depth + 1))
+        } else {
+            EmptyView()
+        }
+    }
+}
+
+private struct KaelRouteView: View {
+    let route: KaelOXiwaxRoute
+    
+    var body: some View {
+        switch route {
+        case .ewioxaEula:
+            EwioxaEula()
+        case .xpavheSignXePage(let xpveheguideType):
+            XpavheSignXePage(xpveheguideType: xpveheguideType)
+        case .fhHhvckaeudeWeb(let fhHguwvWebUrl):
+            FhHhckauedaWeb(aswuznaWebUrlString: fhHguwvWebUrl)
+        case .pxiwkfNavPage:
+            PxiwkfNavPage()
+        }
     }
 }
 

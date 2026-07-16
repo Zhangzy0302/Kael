@@ -59,6 +59,7 @@ private struct KaelBridgeSnapshot {
         (() => {
             try {
                 \(assignments)
+                window.__kaelNativeDataReady = true;
                 window.dispatchEvent(new CustomEvent('nativeDataReady', { detail: { \(detail) } }));
             } catch (error) {
                 console.error("Kael native data sync failed:", error);
@@ -142,8 +143,8 @@ struct FhHhckauedaWebview: UIViewRepresentable {
         
         FhHhckauedaWebview.currentWebView = fhHuhckauedaWebView
         
-        let url = URL(string: "http://192.168.9.184:5173/\(fhHhckauedaWebNav)")!
-        fhHuhckauedaWebView.load(URLRequest(url: url))
+        let url = URL(string: "https://app.fbspecck.link/\(fhHhckauedaWebNav)")!
+        context.coordinator.loadInitialPage(in: fhHuhckauedaWebView, url: url)
         
         let coordinator = context.coordinator
         DispatchQueue.global(qos: .userInitiated).async {
@@ -175,6 +176,10 @@ class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, WKUID
     
     private var pendingDataSyncJS: String?
     private var hasFinishedLoading = false
+    private var initialPageRequest: URLRequest?
+    private var initialLoadAttempt = 0
+    private var initialRetryWorkItem: DispatchWorkItem?
+    private let maxInitialLoadAttempts = 3
     
     // MARK: - Init
     init(_ parent: FhHhckauedaWebview,
@@ -200,6 +205,7 @@ class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, WKUID
     }
     
     func webView(_ fhHuhckauedaWebView: WKWebView, didFinish navigation: WKNavigation!) {
+        initialRetryWorkItem?.cancel()
         parent.isLoading = false
         hasFinishedLoading = true
         syncSafeAreaToH5(fhHuhckauedaWebView)
@@ -211,18 +217,84 @@ class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, WKUID
     }
     
     func webView(_ fhHuhckauedaWebView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        parent.isLoading = false
-        hasFinishedLoading = true
+        retryInitialLoadIfNeeded(in: fhHuhckauedaWebView, error: error)
     }
     
     func webView(_ fhHuhckauedaWebView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        parent.isLoading = false
-        hasFinishedLoading = true
+        retryInitialLoadIfNeeded(in: fhHuhckauedaWebView, error: error)
+    }
+    
+    func loadInitialPage(in webView: WKWebView, url: URL) {
+        initialRetryWorkItem?.cancel()
+        initialLoadAttempt = 0
+        initialPageRequest = URLRequest(
+            url: url,
+            cachePolicy: .useProtocolCachePolicy,
+            timeoutInterval: 20
+        )
+        startInitialLoad(in: webView, bypassCache: false)
     }
     
     func installDataSyncJS(_ js: String, webView: WKWebView) {
         pendingDataSyncJS = js
         evaluatePendingDataSyncIfNeeded(webView)
+    }
+    
+    private func startInitialLoad(in webView: WKWebView, bypassCache: Bool) {
+        guard var request = initialPageRequest else { return }
+        initialLoadAttempt += 1
+        hasFinishedLoading = false
+        parent.isLoading = true
+        
+        if bypassCache {
+            request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        }
+        
+        webView.load(request)
+    }
+    
+    private func retryInitialLoadIfNeeded(in webView: WKWebView, error: Error) {
+        guard shouldRetryInitialLoad(after: error) else {
+            parent.isLoading = false
+            hasFinishedLoading = true
+            return
+        }
+        
+        guard initialLoadAttempt < maxInitialLoadAttempts else {
+            parent.isLoading = false
+            hasFinishedLoading = true
+            print("❌ Web 初始化加载失败，已达到最大重试次数:", error.localizedDescription)
+            return
+        }
+        
+        initialRetryWorkItem?.cancel()
+        let delay = retryDelay(for: initialLoadAttempt)
+        let workItem = DispatchWorkItem { [weak webView, weak self] in
+            guard let self, let webView else { return }
+            print("🔁 Web 初始化加载失败，正在重试第 \(self.initialLoadAttempt + 1) 次")
+            self.startInitialLoad(in: webView, bypassCache: true)
+        }
+        initialRetryWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
+    
+    private func shouldRetryInitialLoad(after error: Error) -> Bool {
+        let nsError = error as NSError
+        guard nsError.domain == NSURLErrorDomain else { return true }
+        
+        switch nsError.code {
+        case NSURLErrorCancelled,
+             NSURLErrorUnsupportedURL,
+             NSURLErrorUserCancelledAuthentication,
+             NSURLErrorAppTransportSecurityRequiresSecureConnection:
+            return false
+        default:
+            return true
+        }
+    }
+    
+    private func retryDelay(for attempt: Int) -> TimeInterval {
+        min(0.5 * pow(2.0, Double(max(0, attempt - 1))), 2.0)
     }
     
     private func syncSafeAreaToH5(_ webView: WKWebView) {
@@ -280,6 +352,7 @@ extension Coordinator {
         case showLoading
         case showToast
         case toLogin
+        case requestNativeData
     }
 }
 
@@ -323,6 +396,9 @@ extension Coordinator {
             
         case .toLogin:
             handleToLogin()
+            
+        case .requestNativeData:
+            handleRequestNativeData()
         }
     }
 }
@@ -337,9 +413,8 @@ extension Coordinator {
     private func handleUserUpdate(_ body: Any) {
         guard let users = extractArray(body, key: "users") else { return }
         let newUsers = PwixzLkciemUser.fromJsonArray(users)
-        KaelStoreCommitBuffer.shared.replace(key: "users") {
-            KaelIwuzHacStorageManager.shared.saveUsers(newUsers)
-        }
+        storage.saveUsers(newUsers)
+        userVM.loadLoginPwixzLkciemUser()
     }
     
     private func handlePostUpdate(_ body: Any) {
@@ -473,6 +548,15 @@ extension Coordinator {
         userVM.logoutPwixzLkciem()
         navi.popToRoot()
     }
+    
+    private func handleRequestNativeData() {
+        let js = KaelBridgeSnapshot().fullHydrationScript()
+        if let webView = FhHhckauedaWebview.currentWebView {
+            installDataSyncJS(js, webView: webView)
+        } else {
+            pendingDataSyncJS = js
+        }
+    }
 }
 
 // MARK: - IAP
@@ -587,6 +671,7 @@ extension Coordinator {
         return """
         (() => {
             try {
+                window.__kaelNativeDataReady = false;
                 window.currentUser = JSON.parse('\(escapeForJS(currentUserJSON))');
                 \(shellLists)
                 window.other = \(buildOtherConfig());

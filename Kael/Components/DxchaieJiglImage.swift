@@ -6,8 +6,11 @@ struct DxchaieJiglImage: View {
   let dxchaieJiglWidth: CGFloat?
   let dxchaieJiglHeight: CGFloat?
   let dxchaieJiglIsCircle: Bool
-    let dxchaieJiglLineWidth: CGFloat
+  let dxchaieJiglLineWidth: CGFloat
   let dxchaieJiglContentMode: ContentMode
+    
+  @State private var reloadToken = 0
+  @State private var automaticReloadCount = 0
 
   init(
     _ dxchaieJiglImageUrl: String,
@@ -22,7 +25,7 @@ struct DxchaieJiglImage: View {
     self.dxchaieJiglHeight = dxchaieJiglHeight
     self.dxchaieJiglIsCircle = dxchaieJiglIsCircle
     self.dxchaieJiglContentMode = dxchaieJiglContentMode
-      self.dxchaieJiglLineWidth = dxchaieJiglLineWidth
+    self.dxchaieJiglLineWidth = dxchaieJiglLineWidth
   }
     
   var body: some View {
@@ -53,6 +56,19 @@ extension DxchaieJiglImage {
   fileprivate func isNetworkUrl(_ path: String) -> Bool {
     path.hasPrefix("http://") || path.hasPrefix("https://")
   }
+    
+  fileprivate func networkURL(from path: String) -> URL? {
+    let trimmedPath = path.trimmingCharacters(in: .whitespacesAndNewlines)
+    if let url = URL(string: trimmedPath) {
+      return url
+    }
+      
+    let allowedCharacters = CharacterSet.urlQueryAllowed
+    guard let encodedPath = trimmedPath.addingPercentEncoding(withAllowedCharacters: allowedCharacters) else {
+      return nil
+    }
+    return URL(string: encodedPath)
+  }
 
   @ViewBuilder
   fileprivate func buildImage() -> some View {
@@ -64,7 +80,7 @@ extension DxchaieJiglImage {
 
     // 2️⃣ 网络图片
     else if isNetworkUrl(dxchaieJiglImageUrl),
-            let url = URL(string: dxchaieJiglImageUrl) {
+            let url = networkURL(from: dxchaieJiglImageUrl) {
 
       AsyncImage(url: url) { phase in
         switch phase {
@@ -75,13 +91,14 @@ extension DxchaieJiglImage {
             .resizable()
             .aspectRatio(contentMode: dxchaieJiglContentMode)
         case .failure:
-          placeholderView()
+          reloadPlaceholderView()
         @unknown default:
-          placeholderView()
+          reloadPlaceholderView()
         }
           
           
       }
+      .id("\(url.absoluteString)-\(reloadToken)")
 
     }
 
@@ -110,6 +127,43 @@ extension DxchaieJiglImage {
       Color(red: 23/255, green: 23/255, blue: 23/255)
       Image(systemName: "photo")
         .foregroundColor(.gray)
+    }
+  }
+    
+  fileprivate func reloadPlaceholderView() -> some View {
+    ZStack {
+      Color(red: 23/255, green: 23/255, blue: 23/255)
+      VStack(spacing: 4) {
+        Image(systemName: "arrow.clockwise")
+          .font(.system(size: 18, weight: .semibold))
+          .foregroundColor(.gray)
+        Text("Retry")
+          .font(.system(size: 10, weight: .medium))
+          .foregroundColor(.gray)
+      }
+    }
+    .contentShape(Rectangle())
+    .onTapGesture {
+      reloadImage(resetAutomaticCount: true)
+    }
+    .onAppear {
+      scheduleAutomaticReloadIfNeeded()
+    }
+  }
+    
+  private func reloadImage(resetAutomaticCount: Bool) {
+    if resetAutomaticCount {
+      automaticReloadCount = 0
+    }
+    reloadToken += 1
+  }
+    
+  private func scheduleAutomaticReloadIfNeeded() {
+    guard automaticReloadCount < 2 else { return }
+    automaticReloadCount += 1
+    let delay = 0.8 * Double(automaticReloadCount)
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+      reloadImage(resetAutomaticCount: false)
     }
   }
 }

@@ -31,3 +31,14 @@ enum KaelGhueauTheme {
       }
     }
 }
+
+extension View {
+    func kaelTextUnderline(_ color: Color = KaelGhueauTheme.KaelColor.kealBgBlack) -> some View {
+        overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(color)
+                .frame(height: 1)
+                .offset(y: 1)
+        }
+    }
+}
