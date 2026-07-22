@@ -71,21 +71,24 @@ struct XpavheSignXePage: View {
                         xpawiIsFocus1 = false
                         xpawiIsFocus2 = false
                         xpawiIsFocus3 = false
-                        if xpavheEmail.isEmpty {
+                        let xpavheTrimmedEmail = xpavheEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let xpavheTrimmedPassword = xpavhePWd.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let xpavheTrimmedRePassword = xpavheRePwd.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if xpavheTrimmedEmail.isEmpty {
                             TuxaliFvswlaHUD.toast(.normal("Email is required"))
                             return
                         }
-                        if xpavhePWd.isEmpty {
+                        if xpavheTrimmedPassword.isEmpty {
                             TuxaliFvswlaHUD.toast(.normal("Password is required"))
                             return
                         }
-                        if ((xpawvheCurrentStatus == .xpavehSignIn) ? false : xpavheRePwd.isEmpty) {
+                        if ((xpawvheCurrentStatus == .xpavehSignIn) ? false : xpavheTrimmedRePassword.isEmpty) {
                             TuxaliFvswlaHUD.toast(.normal("Repassword is required"))
                             return
                         }
                         switch xpawvheCurrentStatus {
                         case .xpavehSignIn:
-                            let xpawiakxUser = xpavhUserVM.loginByEmailAndPasswordPwixzLkciem(email: xpavheEmail, password: xpavhePWd)
+                            let xpawiakxUser = xpavhUserVM.loginByEmailAndPasswordPwixzLkciem(email: xpavheTrimmedEmail, password: xpavheTrimmedPassword)
                             if xpawiakxUser == nil {
                                 TuxaliFvswlaHUD.toast(.error("Invalid email or password"))
                                 return
@@ -96,17 +99,16 @@ struct XpavheSignXePage: View {
                                     TuxaliFvswlaHUD.hideLoading()
                                     xpawiSignnavi.popToRoot()
                                 }
-                                
+                            
                             }
                         case .xoiapceSingUp:
-                            if xpavhePWd != xpavheRePwd {
+                            if xpavheTrimmedPassword != xpavheTrimmedRePassword {
                                 TuxaliFvswlaHUD.toast(.error("Passwords do not match"))
                                 return
                             }
-                            let email = xpavheEmail.trimmingCharacters(in: .whitespacesAndNewlines)
                             let registerPath = XpavheSignXePage.buildRegisterWebPath(
-                                email: email,
-                                password: xpavhePWd
+                                email: xpavheTrimmedEmail,
+                                password: xpavheTrimmedPassword
                             )
                             xpawiSignnavi.push(.fhHhvckaeudeWeb(fhHguwvWebUrl: registerPath))
                         case .xaiwlkSawForgot:

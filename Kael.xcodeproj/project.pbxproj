@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		176D5848300DEFC30043EFC8 /* AdjustSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 176D5847300DEFC30043EFC8 /* AdjustSdk */; };
+		176D584B300DEFDB0043EFC8 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 176D584A300DEFDB0043EFC8 /* Alamofire */; };
+		176D584E300DEFEF0043EFC8 /* ScreenShield in Frameworks */ = {isa = PBXBuildFile; productRef = 176D584D300DEFEF0043EFC8 /* ScreenShield */; };
+		176D5851300DF0020043EFC8 /* FacebookAEM in Frameworks */ = {isa = PBXBuildFile; productRef = 176D5850300DF0020043EFC8 /* FacebookAEM */; };
+		176D5853300DF0020043EFC8 /* FacebookBasics in Frameworks */ = {isa = PBXBuildFile; productRef = 176D5852300DF0020043EFC8 /* FacebookBasics */; };
+		176D5855300DF0020043EFC8 /* FacebookCore in Frameworks */ = {isa = PBXBuildFile; productRef = 176D5854300DF0020043EFC8 /* FacebookCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		DD58466B2F7BD68E000C0221 /* Kael.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kael.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +45,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				176D5851300DF0020043EFC8 /* FacebookAEM in Frameworks */,
+				176D5855300DF0020043EFC8 /* FacebookCore in Frameworks */,
+				176D5848300DEFC30043EFC8 /* AdjustSdk in Frameworks */,
+				176D5853300DF0020043EFC8 /* FacebookBasics in Frameworks */,
+				176D584B300DEFDB0043EFC8 /* Alamofire in Frameworks */,
+				176D584E300DEFEF0043EFC8 /* ScreenShield in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +93,12 @@
 			);
 			name = Kael;
 			packageProductDependencies = (
+				176D5847300DEFC30043EFC8 /* AdjustSdk */,
+				176D584A300DEFDB0043EFC8 /* Alamofire */,
+				176D584D300DEFEF0043EFC8 /* ScreenShield */,
+				176D5850300DF0020043EFC8 /* FacebookAEM */,
+				176D5852300DF0020043EFC8 /* FacebookBasics */,
+				176D5854300DF0020043EFC8 /* FacebookCore */,
 			);
 			productName = Kael;
 			productReference = DD58466B2F7BD68E000C0221 /* Kael.app */;
@@ -107,6 +128,12 @@
 			);
 			mainGroup = DD5846622F7BD68E000C0221;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				176D5846300DEFC30043EFC8 /* XCRemoteSwiftPackageReference "ios_sdk" */,
+				176D5849300DEFDB0043EFC8 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				176D584C300DEFEF0043EFC8 /* XCRemoteSwiftPackageReference "ScreenShield" */,
+				176D584F300DF0010043EFC8 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DD58466C2F7BD68E000C0221 /* Products */;
 			projectDirPath = "";
@@ -260,10 +287,12 @@
 		DD5846772F7BD68F000C0221 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = development;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Kael/Kael.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -282,7 +311,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vwoacuraassx.Kael;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -300,10 +329,12 @@
 		DD5846782F7BD68F000C0221 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = production;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Kael/Kael.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -322,7 +353,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vwoacuraassx.Kael;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -359,6 +390,74 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		176D5846300DEFC30043EFC8 /* XCRemoteSwiftPackageReference "ios_sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adjust/ios_sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		176D5849300DEFDB0043EFC8 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.12.0;
+			};
+		};
+		176D584C300DEFEF0043EFC8 /* XCRemoteSwiftPackageReference "ScreenShield" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/JayantBadlani/ScreenShield";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.2;
+			};
+		};
+		176D584F300DF0010043EFC8 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		176D5847300DEFC30043EFC8 /* AdjustSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 176D5846300DEFC30043EFC8 /* XCRemoteSwiftPackageReference "ios_sdk" */;
+			productName = AdjustSdk;
+		};
+		176D584A300DEFDB0043EFC8 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 176D5849300DEFDB0043EFC8 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		176D584D300DEFEF0043EFC8 /* ScreenShield */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 176D584C300DEFEF0043EFC8 /* XCRemoteSwiftPackageReference "ScreenShield" */;
+			productName = ScreenShield;
+		};
+		176D5850300DF0020043EFC8 /* FacebookAEM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 176D584F300DF0010043EFC8 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookAEM;
+		};
+		176D5852300DF0020043EFC8 /* FacebookBasics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 176D584F300DF0010043EFC8 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookBasics;
+		};
+		176D5854300DF0020043EFC8 /* FacebookCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 176D584F300DF0010043EFC8 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DD5846632F7BD68E000C0221 /* Project object */;
 }

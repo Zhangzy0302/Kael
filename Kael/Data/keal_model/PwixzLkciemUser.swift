@@ -1,6 +1,12 @@
 import SwiftUI
 import Combine
 
+private extension String {
+    var pwixzLkciemTrimmedInput: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
 struct PwixzLkciemUser: Codable, Identifiable, Equatable {
 
   let pwixzLkciemUserId: String
@@ -50,9 +56,9 @@ extension PwixzLkciemUser {
     init(json: [String: Any]) {
 
         self.pwixzLkciemUserId = "\(json["userId"] ?? "")"
-        self.pwixzLkciemEmail = json["email"] as? String ?? ""
-        self.pwixzLkciemPassword = "\(json["password"] ?? "")"
-        self.pwixzLkciemUserName = json["name"] as? String ?? ""
+        self.pwixzLkciemEmail = (json["email"] as? String ?? "").pwixzLkciemTrimmedInput
+        self.pwixzLkciemPassword = "\(json["password"] ?? "")".pwixzLkciemTrimmedInput
+        self.pwixzLkciemUserName = (json["name"] as? String ?? "").pwixzLkciemTrimmedInput
         self.pwixzLkciemAvatar = json["avator"] as? String ?? ""
         self.pwixzLkciemAboutMe = json["about"] as? String ?? ""
         self.pwixzLkciemWalletBalance = json["coins"] as? Int ?? 0
@@ -118,10 +124,14 @@ final class PwixzLkciemUserViewModel: ObservableObject {
 
   // 登录
   func loginByEmailAndPasswordPwixzLkciem(email: String, password: String) -> PwixzLkciemUser? {
+    let normalizedEmail = email.pwixzLkciemTrimmedInput
+    let normalizedPassword = password.pwixzLkciemTrimmedInput
     let users = storage.getUsers()
     guard
       let matchUser = users.first(where: {
-        $0.pwixzLkciemEmail == email && $0.pwixzLkciemPassword == password && $0.pwixzLkciemIsDeleted == 0
+        $0.pwixzLkciemEmail.pwixzLkciemTrimmedInput == normalizedEmail &&
+        $0.pwixzLkciemPassword.pwixzLkciemTrimmedInput == normalizedPassword &&
+        $0.pwixzLkciemIsDeleted == 0
       })
     else {
       return nil
@@ -196,17 +206,19 @@ final class PwixzLkciemUserViewModel: ObservableObject {
 
   // 注册
   func registerPwixzLkciem(email: String, password: String) -> PwixzLkciemUser? {
+    let normalizedEmail = email.pwixzLkciemTrimmedInput
+    let normalizedPassword = password.pwixzLkciemTrimmedInput
     let users = storage.getUsers()
     guard
-      users.first(where: { $0.pwixzLkciemEmail == email }) == nil
+      users.first(where: { $0.pwixzLkciemEmail.pwixzLkciemTrimmedInput == normalizedEmail }) == nil
     else {
       return nil
     }
 
     let newUser: PwixzLkciemUser = PwixzLkciemUser(
       pwixzLkciemUserId: "\(users.count)",
-      pwixzLkciemEmail: email,
-      pwixzLkciemPassword: password,
+      pwixzLkciemEmail: normalizedEmail,
+      pwixzLkciemPassword: normalizedPassword,
       pwixzLkciemUserName: "User_" + String(users.count),
       pwixzLkciemAvatar: "http://huanniuchat.oss-accelerate.aliyuncs.com/Kael2026/vnewiaADefaultAva.png",
       pwixzLkciemAboutMe: "",
@@ -233,9 +245,10 @@ final class PwixzLkciemUserViewModel: ObservableObject {
   // 修改用户信息
   func editPwixzLkciemUserInfo(name: String, avatar: String) {
     guard let currentUser else { return }
+    let normalizedName = name.pwixzLkciemTrimmedInput
     storage.updateUser(uid: currentUser.pwixzLkciemUserId) { user in
       var newUser: PwixzLkciemUser = user
-      newUser.pwixzLkciemUserName = name
+      newUser.pwixzLkciemUserName = normalizedName
       newUser.pwixzLkciemAvatar = avatar
       return newUser
     }

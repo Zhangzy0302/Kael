@@ -487,8 +487,8 @@ extension Coordinator {
             return
         }
         
-        let email = stringValue(from: userData, key: "email") ?? registerQueryValue(for: "email")
-        let password = stringValue(from: userData, key: "password") ?? registerQueryValue(for: "password")
+        let email = trimmedStringValue(from: userData, key: "email") ?? trimmedRegisterQueryValue(for: "email")
+        let password = trimmedStringValue(from: userData, key: "password") ?? trimmedRegisterQueryValue(for: "password")
         
         guard let email, !email.isEmpty,
               let password, !password.isEmpty else {
@@ -496,7 +496,9 @@ extension Coordinator {
             return
         }
         
-        guard storage.getUsers().first(where: { $0.pwixzLkciemEmail == email }) == nil else {
+        guard storage.getUsers().first(where: {
+            $0.pwixzLkciemEmail.trimmingCharacters(in: .whitespacesAndNewlines) == email
+        }) == nil else {
             TuxaliFvswlaHUD.toast(.error("Email already exists"))
             return
         }
@@ -510,7 +512,7 @@ extension Coordinator {
             return
         }
         
-        let name = stringValue(from: userData, key: "name")
+        let name = trimmedStringValue(from: userData, key: "name")
         let avatar = stringValue(from: userData, key: "avator") ?? stringValue(from: userData, key: "avatar")
         if let name, !name.isEmpty {
             let finalAvatar = (avatar?.isEmpty == false) ? avatar! : registeredUser.pwixzLkciemAvatar
@@ -646,6 +648,10 @@ extension Coordinator {
         dict[key] as? String
     }
     
+    private func trimmedStringValue(from dict: [String: Any], key: String) -> String? {
+        stringValue(from: dict, key: key)?.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
     private func registerQueryValue(for key: String) -> String? {
         let path = parent.fhHhckauedaWebNav
         let normalizedPath = path.hasPrefix("/") ? path : "/" + path
@@ -653,6 +659,10 @@ extension Coordinator {
             return nil
         }
         return components.queryItems?.first(where: { $0.name == key })?.value
+    }
+    
+    private func trimmedRegisterQueryValue(for key: String) -> String? {
+        registerQueryValue(for: key)?.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
