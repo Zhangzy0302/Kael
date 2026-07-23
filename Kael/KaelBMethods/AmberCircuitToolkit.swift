@@ -131,7 +131,7 @@ class AmberCircuitInformationCreate {
     static let amberCircuitVerifyDate: DateComponents = DateComponents(
         year: 2026,
         month: 7,
-        day: 23,
+        day: 24,
         hour: 6
     )
 
