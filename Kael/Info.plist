@@ -54,6 +54,8 @@
 		<string>JetBrainsMono-Medium.ttf</string>
 		<string>JetBrainsMono-ExtraBold.ttf</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<false/>
 	<key>UNUserNotificationCenter</key>
 	<dict>
 		<key>UNAuthorizationOptions</key>
